@@ -1,17 +1,46 @@
-*.class
-*.log
-/.idea
+# bloop and metals
+.bloop
+.bsp
+.metals
+project/metals.sbt
 
-# Simple Build Tool
-# http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
+# vs code
+.vscode
 
-dist/*
+# scala 3
+.tasty
+
+# sbt
+project/project/
+project/target/
 target/
-lib_managed/
-src_managed/
-project/boot/
-project/plugins/project/
-.history
+
+# eclipse
+build/
+.classpath
+.project
+.settings
+.worksheet
+bin/
 .cache
-.lib/
-.bsp/
+
+# intellij idea
+*.log
+*.iml
+*.ipr
+*.iws
+.idea
+
+# mac
+.DS_Store
+
+# other?
+.history
+.scala_dependencies
+.cache-main
+
+# general
+*.class
+
+# config
+application.conf
