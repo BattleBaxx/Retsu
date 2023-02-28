@@ -12,9 +12,7 @@
     </encoder>
   </appender>
 
-  <logger name="com.example" level="DEBUG" />
   <logger name="slick" level="WARN" />
-
   <root level="INFO">
     <appender-ref ref="console" />
     <appender-ref ref="file" />

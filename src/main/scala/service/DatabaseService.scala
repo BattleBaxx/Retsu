@@ -1,11 +1,13 @@
-package com.example.service
+package service
 
 import com.typesafe.config.{Config, ConfigFactory}
 import slick.jdbc.PostgresProfile.api._
-import scala.concurrent.Await
+
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 import org.slf4j.LoggerFactory
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object DatabaseService {
@@ -25,21 +27,20 @@ object DatabaseService {
   
   tableExistsFuture.onComplete {
     case Success(tableExists) =>
-      if (tableExists) {
+      logger.debug(tableExists.toString())
+      if (tableExists(0)) {
         logger.info(s"Queue table exists!")
       } else {
         logger.error(s"Queue table does not exist!, exiting...")
-        exit(0)
+        System.exit(0)
       }
     case Failure(ex) =>
       logger.error("An error occurred while checking for the existence of the table.", ex)
-      exit(0)
+      System.exit(0)
   }
 
   // Close the database connection when the application terminates
   sys.addShutdownHook(db.close())
-
-  def query(sql: String, params: Any*) = {
-    db.run(sql"#$sql".bindParams(params: _*).as[(Int, String, String)])
-  }
-}
+def query(sql: String, params: Any*): Future[Nothing] = {
+  db.run(sql"#$sql".bind(params: _*).as[(Int, String, String)])
+};
