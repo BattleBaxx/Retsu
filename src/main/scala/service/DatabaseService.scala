@@ -41,6 +41,8 @@ object DatabaseService {
 
   // Close the database connection when the application terminates
   sys.addShutdownHook(db.close())
-def query(sql: String, params: Any*): Future[Nothing] = {
-  db.run(sql"#$sql".bind(params: _*).as[(Int, String, String)])
-};
+
+  def getDB(): slick.jdbc.PostgresProfile.backend.DatabaseDef = {
+    return db;
+  }
+}
