@@ -6,11 +6,10 @@ import akka.http.scaladsl.Http
 import server.routes.Routes.requestHandler
 import com.typesafe.config.{Config, ConfigFactory}
 
-import slick.jdbc.PostgresProfile.api._
 import scala.concurrent.ExecutionContext
-
 import service.DatabaseService
-import javax.xml.crypto.Data
+
+import scala.io.StdIn
 
 
 object Main {
@@ -23,9 +22,12 @@ object Main {
 
     val db = DatabaseService.getDB();
 
-    val bindingFuture = Http().newServerAt(config.getString("server.hostname"), config.getInt("server.port")).bindSync(requestHandler)
+    val bindingFuture = Http().newServerAt(config.getString("server.hostname"), config.getInt("server.port")).bind(requestHandler)
+
+    println(s"Server now online. Please navigate to http://localhost:8080/hello\nPress RETURN to stop...")
+    StdIn.readLine() // let it run until user presses return
     bindingFuture
-      .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
+        .flatMap(_.unbind()) // trigger unbinding from the port
+        .onComplete(_ => system.terminate()) // and shutdown when done
   }
 }

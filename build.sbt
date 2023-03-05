@@ -21,6 +21,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.slick" %% "slick" % SlickVersion,
   "org.postgresql" % "postgresql" % PostgresqlVersion,
   "com.typesafe" % "config" % TypeSafeConfigVersion,
-  "org.slf4j" % "slf4j-api" % "1.7.5",
-  "org.slf4j" % "slf4j-log4j12" % "1.7.5",
+  "org.slf4j" % "slf4j-api" % "2.0.5",
+  "org.slf4j" % "slf4j-log4j12" % "2.0.5",
+  "com.typesafe.akka" %% "akka-http-spray-json" % "10.5.0",
+  "de.heikoseeberger" %% "akka-http-circe" % "1.39.2",
+  "io.circe" %% "circe-generic" % "0.14.4"
 )
