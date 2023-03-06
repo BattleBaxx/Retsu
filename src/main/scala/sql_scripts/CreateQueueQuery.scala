@@ -5,11 +5,10 @@ import slick.jdbc.PostgresProfile.api._
 
 import java.util.UUID
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-object QueueScriptGenerator {
-    def getCreateQueueQuery(name: String, max_retries: Integer, visibility_timeout_secs: Integer): Future[Unit] = {
+object CreateQueueQuery {
+    def createQueue(name: String, max_retries: Integer, visibility_timeout_secs: Integer): Future[Unit] = {
         val tableNameMessages = s""""public"."${name}_messages""""
         val tableNameInflightMessages = s""""public"."${name}_inflight_messages""""
         val new_max_retries = max_retries.toString()
