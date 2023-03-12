@@ -7,7 +7,6 @@ import server.routes.Routes.requestHandler
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.concurrent.ExecutionContext
-import service.DatabaseService
 
 import scala.io.StdIn
 
@@ -20,7 +19,6 @@ object Main {
     // needed for the future map/flatmap in the end
     implicit val executionContext: ExecutionContext = system.executionContext
 
-    val db = DatabaseService.getDB();
 
     val bindingFuture = Http().newServerAt(config.getString("server.hostname"), config.getInt("server.port")).bind(requestHandler)
 

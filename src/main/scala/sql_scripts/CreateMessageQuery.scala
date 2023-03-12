@@ -8,9 +8,9 @@ import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-object InsertMessageQuery{
+object CreateMessageQuery{
 
-    def insertMessage(tableName: String, queueID: String, body: String, retries: Integer): Unit = {
+    def createMessage(tableName: String, queueID: String, body: String, retries: Integer): Unit = {
         val uuid = UUID.randomUUID().toString
         val db = getDB()
         val string_retries = retries.toString
