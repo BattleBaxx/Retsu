@@ -1,7 +1,8 @@
 package server.models
 
 case class ProcessMessageResponse(
-    id: String,
+    message_id: String,
+    inflight_message_id: String,
     queueID: String,
     body: String,
 )

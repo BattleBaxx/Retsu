@@ -11,9 +11,8 @@ import sql_scripts.CreateQueueQuery.createQueue
 import sql_scripts.GetLatestMessageQuery.getLatestMessage
 import sql_scripts.GetQueueIDQuery.getQueueID
 import sql_scripts.ProcessMessageQuery.processMessage
-import akka.http.scaladsl.model.{HttpResponse, StatusCodes, HttpEntity}
-import play.api.libs.json.Json
-
+import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes}
+import play.api.libs.json.{Json, OWrites}
 
 import scala.util.{Failure, Success}
 import scala.concurrent.Await
@@ -51,7 +50,7 @@ object Routes {
           complete(HttpResponse(StatusCodes.OK, entity = s"Message added to queue ${requestBody.name}."))
 
         }
-      }
+      } // inflight -> messages (procesed as true and inflight
     } ~ path("message" / Segment) { queueName =>
       get {
 
@@ -62,13 +61,21 @@ object Routes {
         val messageIdFuture = getLatestMessage(tableName = tableName)
         val message = Await.result(messageIdFuture, 10.seconds)
 
-        processMessage(tableName = tableName, queueID = queueID, messageID = message._1)
-        val messageResponse = ProcessMessageResponse(id = message._1, queueID = message._2, body = message._3)
-        implicit val messageResponseWrites = Json.writes[ProcessMessageResponse]
-        val json = Json.toJson(messageResponse).toString()
+        processMessage(tableName = tableName, queueID = queueID, messageID = message._1) match {
+          case Some(inflight_message_id) =>
+            val messageResponse = ProcessMessageResponse(message_id = message._1, inflight_message_id = inflight_message_id, queueID = message._2, body = message._3)
+            implicit val messageResponseWrites: OWrites[ProcessMessageResponse] = Json.writes[ProcessMessageResponse]
+            val json = Json.toJson(messageResponse).toString()
 
+            complete(HttpResponse(StatusCodes.OK, entity = HttpEntity(json)))
 
-        complete(HttpResponse(StatusCodes.OK, entity = HttpEntity(json)))
+        }
+      }
+    } ~ path("message" / Segment) { messageId =>
+      delete {
+
+        complete(HttpResponse(StatusCodes.OK, entity = s""))
+
       }
     }
   }
