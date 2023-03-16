@@ -13,10 +13,15 @@ import sql_scripts.GetQueueIDQuery.getQueueID
 import sql_scripts.ProcessMessageQuery.processMessage
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, StatusCodes}
 import play.api.libs.json.{Json, OWrites}
+import sql_scripts.GetInflightMessageQuery.getInflightMessage
+import sql_scripts.GetQueueQuery.getQueue
+import sql_scripts.UpdateMessageProcessed.updateMessageProcessed
 
+import java.time.Instant
 import scala.util.{Failure, Success}
 import scala.concurrent.Await
 import scala.concurrent.duration.DurationInt
+import java.time.Duration
 
 
 object Routes {
@@ -71,11 +76,20 @@ object Routes {
 
         }
       }
-    } ~ path("message" / Segment) { messageId =>
+    } ~ path("message" / Segment) { inflight_message_id =>
       delete {
+        val inflightMessageFuture = getInflightMessage(inflight_message_id = inflight_message_id)
+        val inFLightMessage = Await.result(inflightMessageFuture, 10.seconds)
 
-        complete(HttpResponse(StatusCodes.OK, entity = s""))
+        val queueFuture = getQueue(queue_id = inFLightMessage._2)
+        val queueDetails = Await.result(queueFuture, 10.seconds)
 
+        if (Instant.now().compareTo(inFLightMessage._4.plus(Duration.ofSeconds(queueDetails._4.toLong))) > 0){
+          complete(HttpResponse(StatusCodes.Gone, entity = s"Time exceeded visibility time."))
+        }else{
+          updateMessageProcessed(tableName = queueDetails._2 + "_messages", messageID = inFLightMessage._3)
+          complete(HttpResponse(StatusCodes.OK, entity = s"Message: $inflight_message_id deleted."))
+        }
       }
     }
   }
