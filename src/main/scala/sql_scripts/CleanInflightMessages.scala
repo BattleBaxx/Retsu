@@ -9,7 +9,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object CleanInflightMessages {
-    def CleanInflightMessages(): Future[String] = {
+    def CleanInflightMessages(): Unit = {
 
         val db = getDB()
         val cur_ts = None;
