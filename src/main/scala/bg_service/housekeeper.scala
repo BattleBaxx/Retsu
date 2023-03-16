@@ -1,12 +1,13 @@
 package bg_service
 import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
+import sql_scripts.CleanInflightMessages.CleanInflightMessages
 
-object CleanMessages extends App {
+object HouseKeeper extends App {
     val schedulerFactory: SchedulerFactory = new StdSchedulerFactory()
     val scheduler: Scheduler = schedulerFactory.getScheduler()
 
-    val jobDetail: JobDetail = JobBuilder.newJob(classOf[HelloJob])
+    val jobDetail: JobDetail = JobBuilder.newJob(classOf[CleanUpJob])
         .withIdentity("myJob", "group1")
         .build()
 
@@ -21,9 +22,10 @@ object CleanMessages extends App {
     scheduler.scheduleJob(jobDetail, trigger)
     scheduler.start()
 
-    class HelloJob extends Job {
+    class CleanUpJob extends Job {
         def execute(context: JobExecutionContext): Unit = {
-            println("Hello, world!")
+            // Delete message
+            CleanInflightMessages()
         }
     }
 }
