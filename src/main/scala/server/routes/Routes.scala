@@ -88,6 +88,7 @@ object Routes {
           complete(HttpResponse(StatusCodes.Gone, entity = s"Time exceeded visibility time."))
         }else{
           updateMessageProcessed(tableName = queueDetails._2 + "_messages", messageID = inFLightMessage._3)
+          updateMessageProcessed(tableName = "inflight_mesaages", messageID = inflight_message_id)
           complete(HttpResponse(StatusCodes.OK, entity = s"Message: $inflight_message_id deleted."))
         }
       }

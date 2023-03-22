@@ -3,7 +3,12 @@ import org.quartz._
 import org.quartz.impl.StdSchedulerFactory
 import sql_scripts.CleanInflightMessages.CleanInflightMessages
 
+import service.DatabaseService.getDB
+
+
+
 object HouseKeeper extends App {
+    val db = getDB()
     val schedulerFactory: SchedulerFactory = new StdSchedulerFactory()
     val scheduler: Scheduler = schedulerFactory.getScheduler()
 
@@ -25,7 +30,7 @@ object HouseKeeper extends App {
     class CleanUpJob extends Job {
         def execute(context: JobExecutionContext): Unit = {
             // Delete message
-            CleanInflightMessages()
+            CleanInflightMessages(db)
         }
     }
 }
