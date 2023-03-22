@@ -27,6 +27,7 @@ object HouseKeeper extends App {
     scheduler.scheduleJob(jobDetail, trigger)
     scheduler.start()
 
+    @DisallowConcurrentExecution
     class CleanUpJob extends Job {
         def execute(context: JobExecutionContext): Unit = {
             // Delete message

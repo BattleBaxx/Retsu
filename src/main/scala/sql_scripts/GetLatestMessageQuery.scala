@@ -15,7 +15,13 @@ object GetLatestMessageQuery {
 
     def getLatestMessage(tableName: String): Future[(String, String, String, Instant, Boolean, Boolean, Int)] = {
         val db = getDB()
-        val getLatestMessageIDQuery = sql"SELECT * FROM #$tableName WHERE processed IS false AND inflight IS false ORDER BY created_at ASC LIMIT 1;"
+        val getLatestMessageIDQuery = sql"""SELECT * FROM #$tableName mes
+                JOIN queues q ON mes.queue_id = q.id
+                WHERE processed IS false
+                AND in_flight IS false
+                AND mes.retries <= q.max_retries
+                ORDER BY mes.created_at LIMIT 1;
+        """
         val getLatestMessageIDFuture = db.run(getLatestMessageIDQuery.as[(String, String, String, Instant, Boolean, Boolean, Int)])
         getLatestMessageIDFuture.map(messageIDList =>
             messageIDList.headOption match {

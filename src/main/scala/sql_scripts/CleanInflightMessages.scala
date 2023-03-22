@@ -44,6 +44,8 @@ object CleanInflightMessages extends App {
             }
             inflightMessagesByQueue
         }
+        
+        println(inflightMessagesByQueue)
 
         inflightMessagesByQueueFuture.flatMap { inflightMessagesByQueue =>
             Future.sequence {
@@ -51,7 +53,7 @@ object CleanInflightMessages extends App {
                 val messageIDsString = messageIDs.mkString("', '")
                 val sqlTableName = tableName + "_messages"
                 val updateMessagesTableQuery = sqlu"""
-                UPDATE #${sqlTableName} SET processed = true WHERE id IN ('#${messageIDsString}')
+                UPDATE #${sqlTableName} SET in_flight = false WHERE id IN ('#${messageIDsString}')
                 """
                 db.run(updateMessagesTableQuery).andThen {
                 case Success(_) =>
@@ -68,9 +70,9 @@ object CleanInflightMessages extends App {
                     val deleteInflightMessagesQuery = sqlu"""UPDATE inflight_mesaages SET deleted = true WHERE id IN ('#${messageIDsString}')"""
                     db.run(deleteInflightMessagesQuery).andThen {
                     case Success(_) =>
-                        println(s"Successfully cleaned inflight messages")
+                        println(s"Completed Task")
                     case Failure(exception) =>
-                        println(s"Failed to clean inflight messages because of $exception")
+                        println(s"Failed to update inflight messages because of $exception")
                     }
                 }
 

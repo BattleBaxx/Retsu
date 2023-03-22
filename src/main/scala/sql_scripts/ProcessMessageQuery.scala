@@ -14,7 +14,7 @@ object ProcessMessageQuery{
     def processMessage(tableName: String, queueID: String, messageID: String): Option[String] = {
         val uuid = UUID.randomUUID().toString
         val db = getDB()
-        val updateQuery = sql"""UPDATE #$tableName SET in_flight = TRUE WHERE id = '#$messageID';"""
+        val updateQuery = sql"""UPDATE #$tableName SET in_flight = true WHERE id = '#$messageID';"""
         db.run(updateQuery.asUpdate)
         val insertQuery = sql"""INSERT INTO inflight_mesaages (id, queue_id, message_id) VALUES ('#$uuid', '#$queueID', '#$messageID');"""
         val insertFuture = db.run(insertQuery.asUpdate)
