@@ -53,7 +53,7 @@ object CleanInflightMessages extends App {
                 val messageIDsString = messageIDs.mkString("', '")
                 val sqlTableName = tableName + "_messages"
                 val updateMessagesTableQuery = sqlu"""
-                UPDATE #${sqlTableName} SET in_flight = false WHERE id IN ('#${messageIDsString}')
+                UPDATE #${sqlTableName} SET in_flight = false, retries = retries + 1 WHERE id IN ('#${messageIDsString}')
                 """
                 db.run(updateMessagesTableQuery).andThen {
                 case Success(_) =>
