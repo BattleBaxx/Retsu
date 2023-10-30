@@ -10,11 +10,10 @@ import scala.util.{Failure, Success}
 
 object CreateMessageQuery{
 
-    def createMessage(tableName: String, queueID: String, body: String, retries: Integer): Unit = {
+    def createMessage(tableName: String, queueID: String, body: String): Unit = {
         val uuid = UUID.randomUUID().toString
         val db = getDB()
-        val string_retries = retries.toString
-        val insertQuery = sql"""INSERT INTO #$tableName (id, queue_id, body, retries) VALUES ('#$uuid', '#$queueID', '#$body', '#$string_retries');"""
+        val insertQuery = sql"""INSERT INTO #$tableName (id, queue_id, body) VALUES ('#$uuid', '#$queueID', '#$body');"""
         val insertFuture = db.run(insertQuery.asUpdate)
         insertFuture.onComplete{
             case Success(_) =>

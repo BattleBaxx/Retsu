@@ -17,7 +17,7 @@ object CleanInflightMessages extends App {
         val getInflightMessage = sql"""
             SELECT im.id as im_id, q.name, im.message_id FROM inflight_mesaages im
             JOIN queues q ON im.queue_id = q.id
-            WHERE extract(epoch from im.created_at)::bigint + (q.visibility_timeout_secs::bigint * 1000) <= extract(epoch from now())::bigint
+            WHERE extract(epoch from im.created_at)::bigint + (q.visibility_timeout_secs::bigint * 1000) >= extract(epoch from now())::bigint
             AND im.processed = false
             AND im.deleted = false;
         """
